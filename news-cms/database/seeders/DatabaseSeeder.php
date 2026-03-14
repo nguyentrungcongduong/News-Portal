@@ -1,0 +1,85 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\User;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
+    {
+        // 1. Initialize Spatie Roles
+        $adminRole = \Spatie\Permission\Models\Role::create(['name' => 'admin']);
+        $editorRole = \Spatie\Permission\Models\Role::create(['name' => 'editor']);
+        $authorRole = \Spatie\Permission\Models\Role::create(['name' => 'author']);
+
+        // 2. Create Users with Roles
+        $admin = User::factory()->create([
+            'name' => 'Admin News',
+            'email' => 'admin@news.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+        ]);
+        $admin->assignRole($adminRole);
+
+        $editor = User::factory()->create([
+            'name' => 'Editor News',
+            'email' => 'editor@news.com',
+            'password' => bcrypt('password'),
+            'role' => 'editor',
+        ]);
+        $editor->assignRole($editorRole);
+
+        $author = User::factory()->create([
+            'name' => 'Author News',
+            'email' => 'author@news.com',
+            'password' => bcrypt('password'),
+            'role' => 'author',
+        ]);
+        $author->assignRole($authorRole);
+
+        // 3. Create Categories
+        $categories = [
+            ['name' => 'Thời sự', 'slug' => 'thoi-su'],
+            ['name' => 'Kinh doanh', 'slug' => 'kinh-doanh'],
+            ['name' => 'Thể thao', 'slug' => 'the-thao'],
+            ['name' => 'Giải trí', 'slug' => 'giai-tri'],
+            ['name' => 'Công nghệ', 'slug' => 'cong-nghe'],
+        ];
+
+        $categoryModels = [];
+        foreach ($categories as $cat) {
+            $categoryModels[] = \App\Models\Category::create($cat);
+        }
+
+        // 4. Create Dummy Posts with various statuses
+        $authors = [$admin, $editor, $author];
+        $statuses = ['draft', 'pending', 'published', 'archived'];
+
+        for ($i = 1; $i <= 30; $i++) {
+            $currentAuthor = $authors[$i % count($authors)];
+            $status = $statuses[$i % count($statuses)];
+            $title = "Bài viết mẫu số $i - Tin tức hệ thống News Portal";
+            
+            $post = \App\Models\Post::create([
+                'author_id' => $currentAuthor->id,
+                'title' => $title,
+                'slug' => \Illuminate\Support\Str::slug($title) . '-' . $i,
+                'summary' => "Đây là đoạn tóm tắt (sapo) cho bài viết số $i. Hệ thống quản lý tin tức hiện đại.",
+                'content' => "<p>Nội dung chi tiết của bài viết số $i. Toàn bộ hệ thống đang được vận hành bởi News Portal CMS.</p>",
+                'thumbnail' => "https://picsum.photos/seed/" . $i . "/600/400",
+                'status' => $status,
+                'published_at' => $status === 'published' ? now() : null,
+                'views' => rand(50, 2000),
+            ]);
+
+            $randomCategories = collect($categoryModels)->random(rand(1, 2))->pluck('id');
+            $post->categories()->attach($randomCategories);
+        }
+    }
+}

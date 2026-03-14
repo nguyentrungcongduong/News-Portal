@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: news-portal-api
+    env: php
+    rootDir: news-cms
+    buildCommand: "./render-build.sh"
+    startCommand: "heroku-php-apache2 public/"
+    envVars:
+      - key: APP_NAME
+        value: "NewsPortal"
+      - key: APP_ENV
+        value: "production"
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: SESSION_DRIVER
+        value: "database"
+      - key: DB_CONNECTION
+        value: "pgsql"
+      - key: DB_PORT
+        value: "5432"
+      # Neon database connection variables (Fill these out in the Render Dashboard after deployment)
+      - key: DB_HOST
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: SANCTUM_STATEFUL_DOMAINS
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false

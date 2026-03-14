@@ -1,0 +1,73 @@
+{
+    "title": "Giới thiệu NewsPortal",
+    "slug": "gioi-thieu",
+    "locale": "vi",
+    "status": "published",
+    "seo": {
+        "title": "Giới thiệu | NewsPortal",
+        "description": "Trang tin tức cập nhật 24/7 uy tín nhất Việt Nam",
+        "og_image": "https://example.com/og-image.jpg"
+    },
+    "blocks": [
+        {
+            "id": "block-uuid-1",
+            "type": "hero",
+            "data": {
+                "title": "NewsPortal",
+                "subtitle": "Trang tin tức cập nhật 24/7",
+                "background_image": "https://picsum.photos/1920/600"
+            },
+            "settings": {
+                "align": "center",
+                "overlay": true
+            },
+            "order": 1
+        },
+        {
+            "id": "block-uuid-2",
+            "type": "text",
+            "data": {
+                "content": "<p>NewsPortal là nền tảng tin tức hàng đầu với đội ngũ phóng viên chuyên nghiệp.</p>"
+            },
+            "settings": {
+                "max_width": "800px"
+            },
+            "order": 2
+        },
+        {
+            "id": "block-uuid-3",
+            "type": "image",
+            "data": {
+                "src": "https://picsum.photos/1200/600",
+                "alt": "Tòa soạn NewsPortal",
+                "caption": "Trụ sở chính tại Hà Nội"
+            },
+            "settings": {
+                "width": "full"
+            },
+            "order": 3
+        },
+        {
+            "id": "block-uuid-4",
+            "type": "spacer",
+            "data": {
+                "height": 40
+            },
+            "settings": {},
+            "order": 4
+        },
+        {
+            "id": "block-uuid-5",
+            "type": "cta",
+            "data": {
+                "text": "Liên hệ quảng cáo",
+                "url": "/lien-he"
+            },
+            "settings": {
+                "style": "primary"
+            },
+            "order": 5
+        }
+    ],
+    "version": 1
+}
