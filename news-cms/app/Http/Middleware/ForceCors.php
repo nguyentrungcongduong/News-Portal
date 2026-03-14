@@ -16,21 +16,30 @@ class ForceCors
     public function handle(Request $request, Closure $next): Response
     {
         $allowedOrigins = explode(',', env('CORS_ALLOWED_ORIGINS', 'https://news-portal-public-gray.vercel.app,https://news-portal-admin-beta.vercel.app,http://localhost:3000'));
-        
         $origin = $request->header('Origin');
         
-        // Validate origin with exact match or regex
-        $isAllowed = in_array($origin, $allowedOrigins);
+        // Validate origin with exact match (handling optional trailing slash)
+        $isAllowed = false;
+        foreach ($allowedOrigins as $allowed) {
+            $trimmedAllowed = rtrim($allowed, '/');
+            $trimmedOrigin = rtrim($origin, '/');
+            if ($trimmedOrigin === $trimmedAllowed) {
+                $isAllowed = true;
+                break;
+            }
+        }
         
         if (!$isAllowed && $origin) {
-            // Check regex for Vercel and Render subdomains
-            if (preg_match('/^https:\/\/.*\.vercel\.app$/', $origin) || 
-                preg_match('/^https:\/\/.*\.onrender\.com$/', $origin)) {
+            // Check regex for Vercel and Render subdomains (optional trailing slash)
+            if (preg_match('/^https:\/\/.*\.vercel\.app\/?$/', $origin) || 
+                preg_match('/^https:\/\/.*\.onrender\.com\/?$/', $origin)) {
                 $isAllowed = true;
             }
         }
 
-        if (!$isAllowed) {
+        if ($isAllowed) {
+            // Keep the exact origin sent by the browser
+        } else {
             $origin = isset($allowedOrigins[0]) ? $allowedOrigins[0] : '*';
         }
         

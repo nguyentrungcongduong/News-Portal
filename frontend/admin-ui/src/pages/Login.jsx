@@ -23,8 +23,11 @@ const Login = () => {
                 navigate('/dashboard');
                 break;
             case 'author':
-                // ❌ Author KHÔNG được vào admin panel - redirect về workspace riêng
-                window.location.href = 'http://localhost:3000/author';
+                // Redirect về trang Author ở frontend public
+                const publicUrl = window.location.origin.includes('admin-beta') 
+                    ? window.location.origin.replace('admin-beta', 'public-gray') + '/author'
+                    : 'https://news-portal-public-gray.vercel.app/author';
+                window.location.href = publicUrl;
                 break;
             default:
                 navigate('/dashboard');
