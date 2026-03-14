@@ -16,10 +16,13 @@ export const AuthProvider = ({ children }) => {
         }
 
         try {
+            console.log('Checking auth with token:', token.substring(0, 10) + '...');
             const response = await getMe();
+            console.log('checkAuth success:', response.data.user);
             setUser(response.data.user);
             setIsAuthenticated(true);
         } catch (error) {
+            console.error('checkAuth failed:', error.response?.status, error.message);
             localStorage.removeItem('auth_token');
             setUser(null);
             setIsAuthenticated(false);

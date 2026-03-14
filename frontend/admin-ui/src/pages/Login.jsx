@@ -15,11 +15,21 @@ const Login = () => {
         
         // Role-based redirect - Authors should NOT access admin panel
         const user = response.data.user;
+        console.log('Logged in user:', user);
         
-        switch (user.role) {
+        if (!user) {
+            console.error('No user found in response');
+            navigate('/dashboard');
+            return;
+        }
+        
+        const userRole = user.role || 'admin'; // Fallback
+        
+        switch (userRole) {
             case 'admin':
             case 'editor':
                 // Admin và Editor vào admin panel
+                console.log('Navigating to dashboard...');
                 navigate('/dashboard');
                 break;
             case 'author':
@@ -27,9 +37,11 @@ const Login = () => {
                 const publicUrl = window.location.origin.includes('admin-beta') 
                     ? window.location.origin.replace('admin-beta', 'public-gray') + '/author'
                     : 'https://news-portal-public-gray.vercel.app/author';
+                console.log('Redirecting author to:', publicUrl);
                 window.location.href = publicUrl;
                 break;
             default:
+                console.log('Default: Navigating to dashboard...');
                 navigate('/dashboard');
         }
     } catch (error) {

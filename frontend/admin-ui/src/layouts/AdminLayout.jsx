@@ -45,7 +45,8 @@ const AdminLayout = () => {
 
         // Socket.IO Connection (Optional - graceful degradation)
         try {
-            const socket = io("http://localhost:3001", {
+            const socketUrl = import.meta.env.VITE_SOCKET_URL || "https://news-portal-api-qh1p.onrender.com";
+            const socket = io(socketUrl, {
                 reconnection: true,
                 reconnectionAttempts: 3,
                 reconnectionDelay: 5000,

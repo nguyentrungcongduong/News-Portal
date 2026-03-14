@@ -16,8 +16,10 @@ const RequireAuth = () => {
 
     // ❌ Author KHÔNG được vào Admin Panel - chỉ Admin và Editor
     if (user && user.role === 'author') {
-        // Redirect author về workspace riêng của họ
-        window.location.href = 'http://localhost:3000/author';
+        const publicUrl = window.location.origin.includes('admin-beta') 
+            ? window.location.origin.replace('admin-beta', 'public-gray') + '/author'
+            : 'https://news-portal-public-gray.vercel.app/author';
+        window.location.href = publicUrl;
         return null;
     }
 
@@ -27,7 +29,7 @@ const RequireAuth = () => {
             <div style={{ textAlign: 'center', marginTop: '50px' }}>
                 <h2>403 - Unauthorized</h2>
                 <p>Bạn không có quyền truy cập trang quản trị.</p>
-                <a href="/login" onClick={() => localStorage.removeItem('token')}>Quay lại đăng nhập</a>
+                <a href="/login" onClick={() => localStorage.removeItem('auth_token')}>Quay lại đăng nhập</a>
             </div>
         );
     }
