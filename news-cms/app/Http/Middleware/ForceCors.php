@@ -15,18 +15,23 @@ class ForceCors
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $allowedOrigins = [
-            'http://localhost:3000',
-            'http://localhost:5173',
-            'http://127.0.0.1:3000',
-            'http://127.0.0.1:5173',
-        ];
+        $allowedOrigins = explode(',', env('CORS_ALLOWED_ORIGINS', 'https://news-portal-public-gray.vercel.app,https://news-portal-admin-beta.vercel.app,http://localhost:3000'));
         
         $origin = $request->header('Origin');
         
-        // Validate origin
-        if (!$origin || !in_array($origin, $allowedOrigins)) {
-            $origin = $allowedOrigins[0]; // Default to first allowed origin
+        // Validate origin with exact match or regex
+        $isAllowed = in_array($origin, $allowedOrigins);
+        
+        if (!$isAllowed && $origin) {
+            // Check regex for Vercel and Render subdomains
+            if (preg_match('/^https:\/\/.*\.vercel\.app$/', $origin) || 
+                preg_match('/^https:\/\/.*\.onrender\.com$/', $origin)) {
+                $isAllowed = true;
+            }
+        }
+
+        if (!$isAllowed) {
+            $origin = isset($allowedOrigins[0]) ? $allowedOrigins[0] : '*';
         }
         
         if ($request->isMethod('OPTIONS')) {
