@@ -13,18 +13,25 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // 0. Ensure a default tenant exists
+        $tenant = \App\Models\Tenant::firstOrCreate(
+            ['domain' => parse_url(env('APP_URL', 'localhost'), PHP_URL_HOST) ?: 'localhost'],
+            ['name' => 'Default News Portal']
+        );
+
         // 1. Initialize Spatie Roles
         $adminRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'admin']);
         $editorRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'editor']);
         $authorRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'author']);
 
-        // 2. Create Users with Roles
+        // 2. Create Users with Roles and Tenant
         $admin = User::updateOrCreate(
             ['email' => 'admin@news.com'],
             [
                 'name' => 'Admin News',
                 'password' => bcrypt('password'),
                 'role' => 'admin',
+                'tenant_id' => $tenant->id,
             ]
         );
         $admin->assignRole($adminRole);
@@ -35,6 +42,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Editor News',
                 'password' => bcrypt('password'),
                 'role' => 'editor',
+                'tenant_id' => $tenant->id,
             ]
         );
         $editor->assignRole($editorRole);
@@ -45,6 +53,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Author News',
                 'password' => bcrypt('password'),
                 'role' => 'author',
+                'tenant_id' => $tenant->id,
             ]
         );
         $author->assignRole($authorRole);
