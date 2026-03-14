@@ -1,4 +1,4 @@
-import { getCategoryPosts } from "@/lib/api";
+import { getCategoryData } from "@/lib/api";
 import PostCard from "@/components/PostCard";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -14,7 +14,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
     const { categorySlug } = await params;
     const name = categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1).replace(/-/g, ' ');
-    const url = `${SITE_URL}/category/${categorySlug}`; // Corrected URL path
+    const url = `${SITE_URL}/category/${categorySlug}`;
 
     return {
         title: `${name} | Tin tức mới nhất - News Portal`,
@@ -33,7 +33,9 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
     const { categorySlug } = await params;
-    const { data: posts, meta } = await getCategoryPosts(categorySlug); // Removed 'links' as it's not used
+    const result = await getCategoryData(categorySlug);
+    const posts = result?.data ?? [];
+    const meta = result?.meta ?? null;
 
     const categoryName = posts[0]?.categories?.find((c: any) => c.slug === categorySlug)?.name || categorySlug.toUpperCase();
 
