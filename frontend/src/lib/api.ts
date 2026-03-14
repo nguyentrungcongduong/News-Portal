@@ -92,7 +92,7 @@ export async function getPostBySlug(slug: string) {
 export async function getCategories() {
     try {
         const res = await fetch(`${API_URL}/categories`, {
-            cache: 'no-store'
+            next: { revalidate: 300 } // Cache 5 phút, cho phép static render
         });
         if (!res.ok) return { data: [] };
         return res.json();

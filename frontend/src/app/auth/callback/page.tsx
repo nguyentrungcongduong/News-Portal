@@ -1,10 +1,12 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function AuthCallbackPage() {
+// Tách component dùng useSearchParams ra riêng để bọc trong Suspense
+function AuthCallbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -107,5 +109,18 @@ export default function AuthCallbackPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+// Bọc trong Suspense theo yêu cầu của Next.js khi dùng useSearchParams()
+export default function AuthCallbackPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+                <div className="animate-spin w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full" />
+            </div>
+        }>
+            <AuthCallbackContent />
+        </Suspense>
     );
 }
