@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-# Chạy migration của Laravel
+# Chạy migration và seeder của Laravel
 php artisan migrate --force
+php artisan db:seed --force
 
 # Cấu hình tối ưu hoá (chỉ chạy cache khi production)
 php artisan config:cache

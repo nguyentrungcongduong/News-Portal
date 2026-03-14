@@ -14,33 +14,39 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // 1. Initialize Spatie Roles
-        $adminRole = \Spatie\Permission\Models\Role::create(['name' => 'admin']);
-        $editorRole = \Spatie\Permission\Models\Role::create(['name' => 'editor']);
-        $authorRole = \Spatie\Permission\Models\Role::create(['name' => 'author']);
+        $adminRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'admin']);
+        $editorRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'editor']);
+        $authorRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'author']);
 
         // 2. Create Users with Roles
-        $admin = User::factory()->create([
-            'name' => 'Admin News',
-            'email' => 'admin@news.com',
-            'password' => bcrypt('password'),
-            'role' => 'admin',
-        ]);
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@news.com'],
+            [
+                'name' => 'Admin News',
+                'password' => bcrypt('password'),
+                'role' => 'admin',
+            ]
+        );
         $admin->assignRole($adminRole);
 
-        $editor = User::factory()->create([
-            'name' => 'Editor News',
-            'email' => 'editor@news.com',
-            'password' => bcrypt('password'),
-            'role' => 'editor',
-        ]);
+        $editor = User::updateOrCreate(
+            ['email' => 'editor@news.com'],
+            [
+                'name' => 'Editor News',
+                'password' => bcrypt('password'),
+                'role' => 'editor',
+            ]
+        );
         $editor->assignRole($editorRole);
 
-        $author = User::factory()->create([
-            'name' => 'Author News',
-            'email' => 'author@news.com',
-            'password' => bcrypt('password'),
-            'role' => 'author',
-        ]);
+        $author = User::updateOrCreate(
+            ['email' => 'author@news.com'],
+            [
+                'name' => 'Author News',
+                'password' => bcrypt('password'),
+                'role' => 'author',
+            ]
+        );
         $author->assignRole($authorRole);
 
         // 3. Create Categories
@@ -54,32 +60,37 @@ class DatabaseSeeder extends Seeder
 
         $categoryModels = [];
         foreach ($categories as $cat) {
-            $categoryModels[] = \App\Models\Category::create($cat);
+            $categoryModels[] = \App\Models\Category::firstOrCreate(['slug' => $cat['slug']], ['name' => $cat['name']]);
         }
 
-        // 4. Create Dummy Posts with various statuses
-        $authors = [$admin, $editor, $author];
-        $statuses = ['draft', 'pending', 'published', 'archived'];
+        // 4. Create Dummy Posts with various statuses (Only if none exist yet)
+        if (\App\Models\Post::count() === 0) {
+            $authors = [$admin, $editor, $author];
+            $statuses = ['draft', 'pending', 'published', 'archived'];
 
-        for ($i = 1; $i <= 30; $i++) {
-            $currentAuthor = $authors[$i % count($authors)];
-            $status = $statuses[$i % count($statuses)];
-            $title = "Bài viết mẫu số $i - Tin tức hệ thống News Portal";
-            
-            $post = \App\Models\Post::create([
-                'author_id' => $currentAuthor->id,
-                'title' => $title,
-                'slug' => \Illuminate\Support\Str::slug($title) . '-' . $i,
-                'summary' => "Đây là đoạn tóm tắt (sapo) cho bài viết số $i. Hệ thống quản lý tin tức hiện đại.",
-                'content' => "<p>Nội dung chi tiết của bài viết số $i. Toàn bộ hệ thống đang được vận hành bởi News Portal CMS.</p>",
-                'thumbnail' => "https://picsum.photos/seed/" . $i . "/600/400",
-                'status' => $status,
-                'published_at' => $status === 'published' ? now() : null,
-                'views' => rand(50, 2000),
-            ]);
+            for ($i = 1; $i <= 30; $i++) {
+                $currentAuthor = $authors[$i % count($authors)];
+                $status = $statuses[$i % count($statuses)];
+                $title = "Bài viết mẫu số $i - Tin tức hệ thống News Portal";
+                
+                $post = \App\Models\Post::create([
+                    'author_id' => $currentAuthor->id,
+                    'title' => $title,
+                    'slug' => \Illuminate\Support\Str::slug($title) . '-' . $i,
+                    'summary' => "Đây là đoạn tóm tắt (sapo) cho bài viết số $i. Hệ thống quản lý tin tức hiện đại.",
+                    'content' => "<p>Nội dung chi tiết của bài viết số $i. Toàn bộ hệ thống đang được vận hành bởi News Portal CMS.</p>",
+                    'thumbnail' => "https://picsum.photos/seed/" . $i . "/600/400",
+                    'status' => $status,
+                    'published_at' => $status === 'published' ? now() : null,
+                    'views' => rand(50, 2000),
+                ]);
 
-            $randomCategories = collect($categoryModels)->random(rand(1, 2))->pluck('id');
-            $post->categories()->attach($randomCategories);
+                $randomCategories = collect($categoryModels)->random(rand(1, 2))->pluck('id');
+                $post->categories()->attach($randomCategories);
+            }
         }
+        
+        // 5. Run the new MockPostsSeeder (it has its own duplication checks)
+        $this->call(MockPostsSeeder::class);
     }
 }
