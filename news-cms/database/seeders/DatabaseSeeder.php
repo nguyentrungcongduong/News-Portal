@@ -58,18 +58,32 @@ class DatabaseSeeder extends Seeder
         );
         $author->assignRole($authorRole);
 
-        // 3. Create Categories
+        // 3. Create 10 Hot Categories
         $categories = [
             ['name' => 'Thời sự', 'slug' => 'thoi-su'],
             ['name' => 'Kinh doanh', 'slug' => 'kinh-doanh'],
+            ['name' => 'Công nghệ', 'slug' => 'cong-nghe'],
             ['name' => 'Thể thao', 'slug' => 'the-thao'],
             ['name' => 'Giải trí', 'slug' => 'giai-tri'],
-            ['name' => 'Công nghệ', 'slug' => 'cong-nghe'],
+            ['name' => 'Sức khỏe', 'slug' => 'suc-khoe'],
+            ['name' => 'Giáo dục', 'slug' => 'giao-duc'],
+            ['name' => 'Xe', 'slug' => 'xe'],
+            ['name' => 'Đời sống', 'slug' => 'doi-song'],
+            ['name' => 'Pháp luật', 'slug' => 'phap-luat'],
         ];
 
         $categoryModels = [];
         foreach ($categories as $cat) {
-            $categoryModels[] = \App\Models\Category::firstOrCreate(['slug' => $cat['slug']], ['name' => $cat['name']]);
+            $categoryModels[] = \App\Models\Category::firstOrCreate(
+                ['slug' => $cat['slug']], 
+                [
+                    'name' => $cat['name'],
+                    'tenant_id' => $tenant->id,
+                    'is_active' => true,
+                    'show_on_home' => true,
+                    'order' => array_search($cat, $categories)
+                ]
+            );
         }
 
         // 4. Create Dummy Posts with various statuses (Only if none exist yet)
