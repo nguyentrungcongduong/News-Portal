@@ -12,13 +12,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:3000",
-      "http://localhost:5173",
-      "http://127.0.0.1:3000",
-      "http://127.0.0.1:5173",
-      "http://localhost:8000"
-    ],
+    origin: process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : "*",
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -59,7 +53,7 @@ app.post("/emit", (req, res) => {
   res.json({ success: true });
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Socket server running on port ${PORT}`);
 });
