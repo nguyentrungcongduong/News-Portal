@@ -53,13 +53,23 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
 app.use(express.json());
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: corsOptions,
+  // Socket.IO uses its own CORS handling for the polling/XHR transport.
+  // Use function-based origin check so it can reflect the requesting origin.
+  cors: {
+    origin: (origin, callback) => {
+      if (isOriginAllowed(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+    methods: ["GET", "POST"],
+  },
 });
 
 io.on("connection", (socket) => {
