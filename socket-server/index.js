@@ -5,14 +5,26 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-app.use(cors());
+
+// Configure CORS for Express routes
+const corsOrigins = process.env.FRONTEND_URL 
+  ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
+  : ["https://news-portal-admin-beta.vercel.app", "https://news-portal-web.vercel.app", "http://localhost:3000", "http://localhost:5173"];
+
+app.use(cors({
+  origin: corsOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "OPTIONS"]
+}));
 app.use(express.json());
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : "*",
+    origin: process.env.FRONTEND_URL 
+      ? process.env.FRONTEND_URL.split(',').map(url => url.trim()) 
+      : ["https://news-portal-admin-beta.vercel.app", "https://news-portal-web.vercel.app", "http://localhost:3000", "http://localhost:5173"],
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -56,4 +68,5 @@ app.post("/emit", (req, res) => {
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Socket server running on port ${PORT}`);
+  console.log(`Allowed CORS origins:`, corsOrigins);
 });

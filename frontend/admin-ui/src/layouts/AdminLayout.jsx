@@ -45,7 +45,7 @@ const AdminLayout = () => {
 
         // Socket.IO Connection (Optional - graceful degradation)
         try {
-            const socketUrl = import.meta.env.VITE_SOCKET_URL || "https://news-portal-api-qh1p.onrender.com";
+            const socketUrl = import.meta.env.VITE_SOCKET_URL || "https://news-portal-socket.onrender.com";
             const socket = io(socketUrl, {
                 reconnection: true,
                 reconnectionAttempts: 3,
