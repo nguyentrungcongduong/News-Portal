@@ -9,7 +9,13 @@ const app = express();
 // Configure CORS for Express routes
 const corsOrigins = process.env.FRONTEND_URL 
   ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
-  : ["https://news-portal-admin-beta.vercel.app", "https://news-portal-web.vercel.app", "http://localhost:3000", "http://localhost:5173"];
+  : [
+      "https://news-portal-public-gray.vercel.app",
+      "https://news-portal-admin-beta.vercel.app", 
+      "https://news-portal-web.vercel.app", 
+      "http://localhost:3000", 
+      "http://localhost:5173"
+    ];
 
 app.use(cors({
   origin: corsOrigins,
@@ -22,9 +28,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL 
-      ? process.env.FRONTEND_URL.split(',').map(url => url.trim()) 
-      : ["https://news-portal-admin-beta.vercel.app", "https://news-portal-web.vercel.app", "http://localhost:3000", "http://localhost:5173"],
+    origin: corsOrigins,
     methods: ["GET", "POST"],
     credentials: true,
   },
