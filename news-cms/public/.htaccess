@@ -5,6 +5,17 @@
 
     RewriteEngine On
 
+    # CORS headers for cross-origin requests (notably preflight OPTIONS).
+    # Render/Apache can sometimes answer OPTIONS before Laravel middleware runs,
+    # so we set headers here as a safety net.
+    <IfModule mod_headers.c>
+        Header always set Access-Control-Allow-Origin "%{HTTP:Origin}e"
+        Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, X-XSRF-TOKEN"
+        Header always set Access-Control-Allow-Credentials "true"
+        Header always set Vary "Origin"
+    </IfModule>
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

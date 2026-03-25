@@ -15,49 +15,64 @@ class ForceCors
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $allowedOrigins = explode(',', env('CORS_ALLOWED_ORIGINS', 'https://news-portal-public-gray.vercel.app,https://news-portal-admin-beta.vercel.app,http://localhost:3000'));
+        $allowedOrigins = array_values(array_filter(array_map(
+            static fn($v) => trim($v),
+            explode(',', env('CORS_ALLOWED_ORIGINS', 'https://news-portal-public-gray.vercel.app,https://news-portal-admin-beta.vercel.app,http://localhost:3000'))
+        )));
+
         $origin = $request->header('Origin');
-        
-        // Validate origin with exact match (handling optional trailing slash)
-        $isAllowed = false;
-        foreach ($allowedOrigins as $allowed) {
-            $trimmedAllowed = rtrim($allowed, '/');
-            $trimmedOrigin = rtrim($origin, '/');
-            if ($trimmedOrigin === $trimmedAllowed) {
-                $isAllowed = true;
-                break;
+        $origin = is_string($origin) ? trim($origin) : null;
+
+        $allowOrigin = '*';
+
+        if ($origin) {
+            // Validate origin with exact match (handling optional trailing slash)
+            $isAllowed = false;
+            foreach ($allowedOrigins as $allowed) {
+                $trimmedAllowed = rtrim($allowed, '/');
+                $trimmedOrigin = rtrim($origin, '/');
+                if ($trimmedOrigin === $trimmedAllowed) {
+                    $isAllowed = true;
+                    break;
+                }
             }
-        }
-        
-        if (!$isAllowed && $origin) {
-            // Check regex for Vercel and Render subdomains (optional trailing slash)
-            if (preg_match('/^https:\/\/.*\.vercel\.app\/?$/', $origin) || 
-                preg_match('/^https:\/\/.*\.onrender\.com\/?$/', $origin)) {
-                $isAllowed = true;
+
+            if (!$isAllowed) {
+                // Check regex for Vercel and Render subdomains (optional trailing slash)
+                if (
+                    preg_match('/^https:\/\/.*\.vercel\.app\/?$/', $origin) ||
+                    preg_match('/^https:\/\/.*\.onrender\.com\/?$/', $origin)
+                ) {
+                    $isAllowed = true;
+                }
             }
+
+            $allowOrigin = $isAllowed
+                ? rtrim($origin, '/')
+                : (isset($allowedOrigins[0]) && $allowedOrigins[0] !== '' ? rtrim($allowedOrigins[0], '/') : '*');
         }
 
-        if ($isAllowed) {
-            // Keep the exact origin sent by the browser
-        } else {
-            $origin = isset($allowedOrigins[0]) ? $allowedOrigins[0] : '*';
-        }
-        
+        // Echo back requested headers when possible (helps if frontend adds more headers).
+        $requestedHeaders = $request->header('Access-Control-Request-Headers');
+        $allowHeaders = $requestedHeaders ? $requestedHeaders : 'Content-Type, Authorization, X-Requested-With, Accept, X-XSRF-TOKEN';
+
         if ($request->isMethod('OPTIONS')) {
             return response('', 200)
-                ->header('Access-Control-Allow-Origin', $origin)
+                ->header('Access-Control-Allow-Origin', $allowOrigin)
+                ->header('Vary', 'Origin')
                 ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
                 ->header('Access-Control-Allow-Credentials', 'true')
-                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, X-XSRF-TOKEN');
+                ->header('Access-Control-Allow-Headers', $allowHeaders);
         }
 
         $response = $next($request);
-        
+
         if (method_exists($response, 'header')) {
-            $response->header('Access-Control-Allow-Origin', $origin);
+            $response->header('Access-Control-Allow-Origin', $allowOrigin);
+            $response->header('Vary', 'Origin');
             $response->header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
             $response->header('Access-Control-Allow-Credentials', 'true');
-            $response->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, X-XSRF-TOKEN');
+            $response->header('Access-Control-Allow-Headers', $allowHeaders);
         }
 
         return $response;
