@@ -22,23 +22,9 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Ghi file cấu hình CORS cho Apache (fallback safety net)
-RUN printf '<IfModule mod_headers.c>\n\
-  <If "req(Origin) =~ /https:\\/\\/[a-z0-9-]+\\.vercel\\.app/">\n\
-    Header always set Access-Control-Allow-Origin "%%{HTTP_ORIGIN}e" env=!no_cors\n\
-    Header always set Access-Control-Allow-Credentials "true"\n\
-    Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"\n\
-    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, X-XSRF-TOKEN"\n\
-    Header always set Vary "Origin"\n\
-  </If>\n\
-  <If "req(Origin) =~ /https:\\/\\/[a-z0-9-]+\\.onrender\\.com/">\n\
-    Header always set Access-Control-Allow-Origin "%%{HTTP_ORIGIN}e" env=!no_cors\n\
-    Header always set Access-Control-Allow-Credentials "true"\n\
-    Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"\n\
-    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, X-XSRF-TOKEN"\n\
-    Header always set Vary "Origin"\n\
-  </If>\n\
-</IfModule>\n' > /etc/apache2/conf-available/cors.conf \
-    && a2enconf cors
+# Dùng COPY để tránh vấn đề escaping với printf và %{} trong shell
+COPY cors.conf /etc/apache2/conf-available/cors.conf
+RUN a2enconf cors
 
 # Copy mã nguồn
 COPY . /var/www/html
