@@ -161,7 +161,6 @@ class MockPostsSeeder extends Seeder
                     'status' => 'published',
                     'published_at' => now()->subHours(rand(1, 100)),
                     'views' => rand(1000, 50000),
-                    'is_featured' => ($index === 0), // Bài đầu tiên mỗi mục làm featured
                 ]);
 
                 $post->categories()->attach($category->id);
