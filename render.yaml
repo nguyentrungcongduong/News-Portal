@@ -5,6 +5,7 @@ services:
     rootDir: news-cms
     dockerfilePath: ./Dockerfile
     plan: free
+    healthCheckPath: /api/health
     envVars:
       - key: APP_NAME
         value: "NewsPortal"
@@ -45,6 +46,7 @@ services:
     buildCommand: "npm install"
     startCommand: "npm start"
     plan: free
+    healthCheckPath: /health
     envVars:
       - key: FRONTEND_URL
         sync: false

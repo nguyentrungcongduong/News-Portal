@@ -8,6 +8,12 @@ use App\Http\Controllers\Api\Admin\CategoryController;
 use App\Http\Controllers\Api\Admin\MediaController;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
+// Health check - used by Render's health check system and frontend keep-alive ping
+// Keeps the free-tier server warm and provides a fast status endpoint
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok', 'timestamp' => now()->toISOString()]);
+});
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');

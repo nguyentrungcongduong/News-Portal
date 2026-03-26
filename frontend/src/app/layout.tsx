@@ -9,6 +9,7 @@ import { AdsProvider } from "@/contexts/AdsContext";
 
 import GlobalBreakingNews from "@/components/GlobalBreakingNews";
 import RealtimeListener from "@/components/RealtimeListener";
+import KeepAlive from "@/components/KeepAlive";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { App as AntdApp } from "antd";
 
@@ -66,6 +67,7 @@ export default function RootLayout({
               <AuthProvider>
                 <AdsProvider>
                   <RealtimeListener />
+                  <KeepAlive />
                   {children}
                 </AdsProvider>
               </AuthProvider>

@@ -26,14 +26,17 @@ export function AdsProvider({ children }: { children: React.ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchAllAds = useCallback(async () => {
+        setIsLoading(true);
         try {
             // Fetch all active ads in one single request
+            // Note: axios.ts handles cold-start retries automatically
             const response = await api.get('/api/public/ads');
             if (Array.isArray(response.data)) {
                 setAds(response.data);
             }
         } catch (error) {
-            console.error("Failed to fetch ads bundle:", error);
+            // Non-fatal: ads are optional. Page loads fine without them.
+            console.warn("Failed to fetch ads bundle (backend may still be waking up):", error);
         } finally {
             setIsLoading(false);
         }

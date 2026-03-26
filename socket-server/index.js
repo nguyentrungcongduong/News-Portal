@@ -95,6 +95,11 @@ io.on("connection", (socket) => {
   });
 });
 
+// Health check for Render's probing and keep-alive
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 app.post("/emit", (req, res) => {
   const { channel, event, data } = req.body;
 
