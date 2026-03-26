@@ -79,8 +79,8 @@ class DatabaseSeeder extends Seeder
                 [
                     'name' => $cat['name'],
                     'tenant_id' => $tenant->id,
-                    'is_active' => true,
-                    'show_on_home' => true,
+                    'status' => 'active',   // was: is_active => true (column doesn't exist)
+                    'show_home' => true,    // was: show_on_home (wrong column name)
                     'order' => array_search($cat, $categories)
                 ]
             );
