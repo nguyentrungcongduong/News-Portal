@@ -15,6 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // ForceCors is our comprehensive CORS handler (covers exceptions too via
+        // the withExceptions()->respond() callback below).
+        // HandleCors (Laravel's built-in) MUST be removed — if both run, they
+        // both set Access-Control-Allow-Origin, producing a duplicate header:
+        //   "(null), https://..."  which browsers reject.
+        $middleware->remove(\Illuminate\Http\Middleware\HandleCors::class);
         $middleware->prepend(\App\Http\Middleware\ForceCors::class);
 
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);

@@ -11,20 +11,15 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_pgsql zip exif gd
 
-# Bật rewrite module và headers module cho Apache
-RUN a2enmod rewrite headers
+# Bật rewrite module (CORS được xử lý bởi Laravel, không dùng Apache-level CORS
+# vì Apache mod_headers + PHP headers = duplicate Access-Control-Allow-Origin)
+RUN a2enmod rewrite
 
-# Cấu hình Apache — bao gồm CORS headers cấp Apache
-# Đây là tuyến phòng thủ cuối cùng: nếu PHP crash, Apache vẫn gửi CORS headers
-# để browser hiển thị lỗi thực sự thay vì "CORS policy" giả.
+# Cấu hình Apache document root → Laravel /public
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Ghi file cấu hình CORS cho Apache (fallback safety net)
-# Dùng COPY để tránh vấn đề escaping với printf và %{} trong shell
-COPY cors.conf /etc/apache2/conf-available/cors.conf
-RUN a2enconf cors
 
 # Copy mã nguồn
 COPY . /var/www/html
