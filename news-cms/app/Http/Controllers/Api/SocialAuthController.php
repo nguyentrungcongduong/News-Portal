@@ -29,7 +29,7 @@ class SocialAuthController extends Controller
 
         try {
             // Get redirect url from query or default
-            $redirectUrl = rtrim($request->query('redirect_url', config('app.frontend_url', 'http://localhost:3000')), '/');
+            $redirectUrl = rtrim($request->query('redirect_url', $this->getDefaultFrontendUrl()), '/');
             
             // Build state object
             $state = base64_encode(json_encode([
@@ -61,7 +61,7 @@ class SocialAuthController extends Controller
     public function callback(Request $request, string $provider)
     {
         // Extract original frontend redirect URL from state
-        $frontendUrl = config('app.frontend_url', 'http://localhost:3000');
+        $frontendUrl = $this->getDefaultFrontendUrl();
         $state = $request->query('state');
         if ($state) {
             $stateData = json_decode(base64_decode($state), true);
@@ -257,11 +257,24 @@ class SocialAuthController extends Controller
     }
 
     /**
+     * Get default frontend URL
+     */
+    protected function getDefaultFrontendUrl()
+    {
+        $urls = explode(',', config('app.frontend_url', 'http://localhost:3000'));
+        return trim($urls[0]);
+    }
+
+    /**
      * Redirect to frontend with error
      */
     protected function redirectToFrontendWithError(string $message, string $frontendUrl = null)
     {
-        $frontendUrl = $frontendUrl ?? config('app.frontend_url', 'http://localhost:3000');
+        $frontendUrl = $frontendUrl ?? $this->getDefaultFrontendUrl();
+        // Just in case the mapped frontendUrl still has commas
+        if (strpos($frontendUrl, ',') !== false) {
+            $frontendUrl = explode(',', $frontendUrl)[0];
+        }
         $encodedMessage = urlencode($message);
         
         return redirect("{$frontendUrl}/auth/callback?error={$encodedMessage}");
@@ -272,7 +285,11 @@ class SocialAuthController extends Controller
      */
     protected function redirectToFrontendWithSuccess(string $token, User $user, string $frontendUrl = null)
     {
-        $frontendUrl = $frontendUrl ?? config('app.frontend_url', 'http://localhost:3000');
+        $frontendUrl = $frontendUrl ?? $this->getDefaultFrontendUrl();
+        // Just in case the mapped frontendUrl still has commas
+        if (strpos($frontendUrl, ',') !== false) {
+            $frontendUrl = explode(',', $frontendUrl)[0];
+        }
         
         return redirect("{$frontendUrl}/auth/callback?token={$token}&user_id={$user->id}");
     }
