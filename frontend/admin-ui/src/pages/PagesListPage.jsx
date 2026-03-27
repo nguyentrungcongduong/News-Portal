@@ -114,7 +114,10 @@ export default function PagesListPage() {
             <Button
               size="small"
               icon={<EyeOutlined />}
-              onClick={() => window.open(`http://localhost:3000/page/${record.slug}`, '_blank')}
+              onClick={() => {
+                const baseUrl = import.meta.env.VITE_FRONTEND_URL || 'https://news-portal-public-gray.vercel.app';
+                window.open(`${baseUrl}/page/${record.slug}`, '_blank');
+              }}
             />
           </Tooltip>
           <Tooltip title="Chỉnh sửa">
