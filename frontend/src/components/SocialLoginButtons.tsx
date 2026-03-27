@@ -18,7 +18,8 @@ export default function SocialLoginButtons({ disabled = false, onLoading }: Prop
             onLoading?.(true);
 
             // Get redirect URL from backend
-            const response = await fetch(`${API_BASE_URL}/auth/${provider}/redirect`, {
+            const currentOrigin = window.location.origin;
+            const response = await fetch(`${API_BASE_URL}/auth/${provider}/redirect?redirect_url=${encodeURIComponent(currentOrigin)}`, {
                 headers: {
                     'Accept': 'application/json'
                 }

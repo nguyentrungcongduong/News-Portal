@@ -19,7 +19,7 @@ class SocialAuthController extends Controller
     /**
      * Redirect to OAuth provider
      */
-    public function redirect(string $provider)
+    public function redirect(Request $request, string $provider)
     {
         if (!in_array($provider, $this->providers)) {
             return response()->json([
@@ -28,9 +28,18 @@ class SocialAuthController extends Controller
         }
 
         try {
+            // Get redirect url from query or default
+            $redirectUrl = rtrim($request->query('redirect_url', config('app.frontend_url', 'http://localhost:3000')), '/');
+            
+            // Build state object
+            $state = base64_encode(json_encode([
+                'redirect_url' => $redirectUrl,
+            ]));
+
             // Get the redirect URL from Socialite
             $url = Socialite::driver($provider)
                 ->stateless()
+                ->with(['state' => $state])
                 ->redirect()
                 ->getTargetUrl();
 
@@ -49,21 +58,32 @@ class SocialAuthController extends Controller
     /**
      * Handle OAuth callback
      */
-    public function callback(string $provider)
+    public function callback(Request $request, string $provider)
     {
+        // Extract original frontend redirect URL from state
+        $frontendUrl = config('app.frontend_url', 'http://localhost:3000');
+        $state = $request->query('state');
+        if ($state) {
+            $stateData = json_decode(base64_decode($state), true);
+            if (is_array($stateData) && isset($stateData['redirect_url'])) {
+                $frontendUrl = rtrim($stateData['redirect_url'], '/');
+            }
+        }
+
         if (!in_array($provider, $this->providers)) {
-            return $this->redirectToFrontendWithError('Provider không được hỗ trợ.');
+            return $this->redirectToFrontendWithError('Provider không được hỗ trợ.', $frontendUrl);
         }
 
         try {
+            // We still use stateless() because we are using an API route
             $socialUser = Socialite::driver($provider)->stateless()->user();
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Socialite Callback Error ($provider): " . $e->getMessage());
-            return $this->redirectToFrontendWithError('Không thể xác thực với ' . ucfirst($provider) . '. Vui lòng thử lại.');
+            return $this->redirectToFrontendWithError('Không thể xác thực với ' . ucfirst($provider) . '. Vui lòng thử lại.', $frontendUrl);
         }
 
         if (!$socialUser->getEmail()) {
-            return $this->redirectToFrontendWithError('Không thể lấy email từ ' . ucfirst($provider) . '. Vui lòng cấp quyền truy cập email.');
+            return $this->redirectToFrontendWithError('Không thể lấy email từ ' . ucfirst($provider) . '. Vui lòng cấp quyền truy cập email.', $frontendUrl);
         }
 
         try {
@@ -78,14 +98,15 @@ class SocialAuthController extends Controller
                     // We allow 'author'? User said only 'user' role. Let's check existingUser role.
                     if (in_array($existingUser->role, ['admin', 'editor'])) {
                         return $this->redirectToFrontendWithError(
-                            'Tài khoản Admin/Editor không được phép đăng nhập bằng ' . ucfirst($provider) . '. Vui lòng sử dụng mật khẩu.'
+                            'Tài khoản Admin/Editor không được phép đăng nhập bằng ' . ucfirst($provider) . '. Vui lòng sử dụng mật khẩu.',
+                            $frontendUrl
                         );
                     }
                 }
 
                 // Check if blocked
                 if ($existingUser->is_blocked) {
-                    return $this->redirectToFrontendWithError('Tài khoản của bạn đã bị khóa.');
+                    return $this->redirectToFrontendWithError('Tài khoản của bạn đã bị khóa.', $frontendUrl);
                 }
 
                 // Update OAuth info if not set
@@ -129,10 +150,10 @@ class SocialAuthController extends Controller
             $token = $user->createToken('oauth-token')->plainTextToken;
 
             // Redirect to frontend with token
-            return $this->redirectToFrontendWithSuccess($token, $user);
+            return $this->redirectToFrontendWithSuccess($token, $user, $frontendUrl);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("OAuth Finalization Error ($provider): " . $e->getMessage());
-            return $this->redirectToFrontendWithError('Có lỗi xảy ra trong quá trình xử lý tài khoản. Vui lòng thử lại sau.');
+            return $this->redirectToFrontendWithError('Có lỗi xảy ra trong quá trình xử lý tài khoản. Vui lòng thử lại sau.', $frontendUrl);
         }
     }
 
@@ -238,9 +259,9 @@ class SocialAuthController extends Controller
     /**
      * Redirect to frontend with error
      */
-    protected function redirectToFrontendWithError(string $message)
+    protected function redirectToFrontendWithError(string $message, string $frontendUrl = null)
     {
-        $frontendUrl = config('app.frontend_url', 'http://localhost:3000');
+        $frontendUrl = $frontendUrl ?? config('app.frontend_url', 'http://localhost:3000');
         $encodedMessage = urlencode($message);
         
         return redirect("{$frontendUrl}/auth/callback?error={$encodedMessage}");
@@ -249,9 +270,9 @@ class SocialAuthController extends Controller
     /**
      * Redirect to frontend with success token
      */
-    protected function redirectToFrontendWithSuccess(string $token, User $user)
+    protected function redirectToFrontendWithSuccess(string $token, User $user, string $frontendUrl = null)
     {
-        $frontendUrl = config('app.frontend_url', 'http://localhost:3000');
+        $frontendUrl = $frontendUrl ?? config('app.frontend_url', 'http://localhost:3000');
         
         return redirect("{$frontendUrl}/auth/callback?token={$token}&user_id={$user->id}");
     }
