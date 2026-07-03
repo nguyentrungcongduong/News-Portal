@@ -81,9 +81,19 @@ class Post extends Model
         return $this->hasMany(PostLike::class);
     }
 
+    public function bookmarks()
+    {
+        return $this->hasMany(PostBookmark::class);
+    }
+
     public function likedBy($userId)
     {
         return $this->likes()->where('user_id', $userId)->exists();
+    }
+
+    public function bookmarkedBy($userId)
+    {
+        return $this->bookmarks()->where('user_id', $userId)->exists();
     }
 
     public function reviewComments()

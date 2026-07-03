@@ -103,10 +103,10 @@ export default function NotificationBell() {
       {isOpen && (
         <>
           <div
-            className="fixed inset-0 z-40 cursor-default"
+            className="fixed inset-0 z-[180] cursor-default"
             onClick={() => setIsOpen(false)}
           ></div>
-          <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl z-50 overflow-hidden text-left">
+          <div className="absolute right-0 z-[190] mt-2 w-80 overflow-hidden rounded-xl border border-zinc-200 bg-white text-left shadow-2xl dark:border-zinc-800 dark:bg-zinc-900">
             <div className="p-3 border-b border-zinc-100 dark:border-zinc-800 font-bold text-sm bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-between">
               <span>Thông báo mới</span>
               {isLoading && (

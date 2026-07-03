@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BreakingNews;
 use App\Models\Post;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class BreakingNewsController extends Controller
@@ -33,32 +34,49 @@ class BreakingNewsController extends Controller
             'start_at' => 'nullable|date',
             'end_at' => 'nullable|date|after_or_equal:start_at',
             'is_active' => 'boolean',
-            'send_notification' => 'boolean' // New field
+            'send_notification' => 'boolean',
         ]);
 
-        // Security: Ensure post is published
         $post = Post::findOrFail($validated['post_id']);
         if ($post->status !== 'published') {
             return response()->json(['message' => 'Bài viết chưa được xuất bản.'], 422);
         }
 
-        // Limit active breaking news to 5 (SAFEY-GUARD)
+        $existingBreakingNews = BreakingNews::where('post_id', $validated['post_id'])->first();
+        if ($existingBreakingNews) {
+            return response()->json([
+                'message' => 'Bài viết này đã có trong Breaking News. Hãy sửa bản ghi hiện có thay vì tạo mới.',
+                'data' => $existingBreakingNews,
+            ], 422);
+        }
+
         if (($validated['is_active'] ?? true)) {
             $activeCount = BreakingNews::active()->count();
             if ($activeCount >= 5) {
                 return response()->json(['message' => 'Đã đạt giới hạn 5 tin nóng đang hiển thị. Vui lòng tắt bớt tin cũ.'], 422);
             }
         }
-        
-        // Remove auxiliary field before creating model
+
         $sendNotification = $validated['send_notification'] ?? false;
         unset($validated['send_notification']);
 
-        $breakingNews = BreakingNews::create($validated);
+        try {
+            $breakingNews = BreakingNews::create($validated);
+        } catch (QueryException $exception) {
+            if ((string) $exception->getCode() === '23000') {
+                $existingBreakingNews = BreakingNews::where('post_id', $validated['post_id'])->first();
 
-        // TRIGGER EVENT
+                return response()->json([
+                    'message' => 'Bài viết này đã có trong Breaking News.',
+                    'data' => $existingBreakingNews,
+                ], 422);
+            }
+
+            throw $exception;
+        }
+
         if ($breakingNews->is_active && $sendNotification) {
-             \App\Events\BreakingNewsActivated::dispatch($breakingNews);
+            \App\Events\BreakingNewsActivated::dispatch($breakingNews);
         }
 
         return response()->json(['message' => 'Đã thêm tin nóng', 'data' => $breakingNews], 201);
@@ -84,17 +102,16 @@ class BreakingNewsController extends Controller
             'start_at' => 'nullable|date',
             'end_at' => 'nullable|date|after_or_equal:start_at',
             'is_active' => 'boolean',
-            'send_notification' => 'boolean'
+            'send_notification' => 'boolean',
         ]);
 
         $sendNotification = $validated['send_notification'] ?? false;
         unset($validated['send_notification']);
 
         $breakingNews->update($validated);
-        
-        // If updated to active and requested notification
+
         if ($breakingNews->is_active && $sendNotification) {
-             \App\Events\BreakingNewsActivated::dispatch($breakingNews);
+            \App\Events\BreakingNewsActivated::dispatch($breakingNews);
         }
 
         return response()->json(['message' => 'Cập nhật thành công', 'data' => $breakingNews]);
@@ -117,8 +134,7 @@ class BreakingNewsController extends Controller
     public function toggle(Request $request, string $id)
     {
         $breakingNews = BreakingNews::findOrFail($id);
-        
-        // If turning on, check limit
+
         if (!$breakingNews->is_active) {
             $activeCount = BreakingNews::active()->count();
             if ($activeCount >= 5) {
@@ -128,8 +144,7 @@ class BreakingNewsController extends Controller
 
         $breakingNews->is_active = !$breakingNews->is_active;
         $breakingNews->save();
-        
-        // Allow passing ?send_notification=1 to toggle route
+
         if ($breakingNews->is_active && $request->boolean('send_notification')) {
             \App\Events\BreakingNewsActivated::dispatch($breakingNews);
         }

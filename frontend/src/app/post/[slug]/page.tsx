@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import EditorialPostCard from '@/components/EditorialPostCard';
 import LikeButton from '@/components/LikeButton';
+import BookmarkButton from '@/components/BookmarkButton';
 import CommentSection from '@/components/CommentSection';
 import AdBanner from '@/components/AdBanner';
 
@@ -76,6 +77,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
                                 </div>
                                 <div className="flex items-center gap-6">
                                     <LikeButton postId={post.id} initialLikes={post.likes_count || 0} initialLiked={post.liked || false} />
+                                    <BookmarkButton postId={post.id} initialBookmarked={post.bookmarked || false} />
 
                                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
@@ -186,11 +188,11 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
                                 </h3>
                                 <div className="space-y-8">
                                     {trending_posts.map((item: any, index: number) => (
-                                        <Link key={item.id} href={`/post/${item.slug}`} className="flex gap-6 group items-start">
-                                            <span className="text-4xl font-serif italic font-black text-muted/30 group-hover:text-primary transition-colors leading-none pt-1">
+                                        <Link key={item.id} href={`/post/${item.slug}`} className="flex gap-6 items-start">
+                                            <span className="text-4xl font-serif italic font-black text-primary/80 leading-none pt-1">
                                                 {String(index + 1).padStart(2, '0')}
                                             </span>
-                                            <p className="font-serif font-black text-lg leading-[1.3] group-hover:text-primary transition-colors line-clamp-2">
+                                            <p className="font-serif font-black text-lg leading-[1.3] text-foreground line-clamp-2">
                                                 {item.title}
                                             </p>
                                         </Link>

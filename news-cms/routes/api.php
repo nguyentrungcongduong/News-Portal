@@ -70,6 +70,9 @@ Route::prefix('public')->group(function () {
     Route::get('/search', [\App\Http\Controllers\Api\Public\SearchController::class, 'search']);
     Route::get('/trending', [\App\Http\Controllers\Api\Public\StatsController::class, 'trending']);
     Route::post('/posts/{id}/like', [\App\Http\Controllers\Api\Public\PostController::class, 'like'])->middleware(['auth:sanctum', 'blocked']);
+    Route::post('/posts/{id}/bookmark', [\App\Http\Controllers\Api\Public\PostController::class, 'bookmark'])->middleware(['auth:sanctum', 'blocked']);
+    Route::get('/me/bookmarks', [\App\Http\Controllers\Api\Public\PostController::class, 'bookmarks'])->middleware(['auth:sanctum', 'blocked']);
+    Route::get('/me/bookmarks/ids', [\App\Http\Controllers\Api\Public\PostController::class, 'bookmarkIds'])->middleware(['auth:sanctum', 'blocked']);
 
     // Comments
     Route::get('/posts/{slug}/comments', [\App\Http\Controllers\Api\Public\CommentController::class, 'index']);

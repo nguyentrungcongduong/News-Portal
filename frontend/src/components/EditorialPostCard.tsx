@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import BookmarkButton from "@/components/BookmarkButton";
 
 interface EditorialPostCardProps {
     post: any;
@@ -105,9 +106,12 @@ export default function EditorialPostCard({
                         <time className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
                             {publishedAt}
                         </time>
-                        <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
-                            {readingTime}
-                        </span>
+                        <div className="flex items-center gap-3">
+                            <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
+                                {readingTime}
+                            </span>
+                            <BookmarkButton postId={post.id} initialBookmarked={post.bookmarked} variant="icon" />
+                        </div>
                     </div>
                 </div>
             </article>
@@ -141,6 +145,7 @@ export default function EditorialPostCard({
                         <span>{readingTime}</span>
                     </div>
                 </div>
+                <BookmarkButton postId={post.id} initialBookmarked={post.bookmarked} variant="icon" className="shrink-0" />
             </article>
         );
     }
@@ -167,7 +172,11 @@ export default function EditorialPostCard({
                     <span>{readingTime}</span>
                 </div>
             </div>
-            <div className="relative h-24 overflow-hidden rounded-2xl md:h-28">
+            <div className="relative">
+                <div className="absolute right-2 top-2 z-10">
+                    <BookmarkButton postId={post.id} initialBookmarked={post.bookmarked} variant="icon" />
+                </div>
+                <div className="relative h-24 overflow-hidden rounded-2xl md:h-28">
                 <Image
                     src={post.thumbnail || "https://picsum.photos/200/200"}
                     alt={post.title}
@@ -175,6 +184,7 @@ export default function EditorialPostCard({
                     className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                     sizes="136px"
                 />
+                </div>
             </div>
         </article>
     );

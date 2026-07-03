@@ -21,11 +21,25 @@ class CommentController extends Controller
         $keyword = $request->get('keyword');
         $postId = $request->get('post_id');
 
-        $comments = Comment::with(['user:id,name,email', 'post:id,title,slug', 'reports'])
-            ->withCount('reports')
+        $comments = Comment::query()
+            ->select([
+                'id',
+                'post_id',
+                'user_id',
+                'content',
+                'status',
+                'spam_reason',
+                'report_count',
+                'created_at',
+            ])
+            ->selectRaw('report_count as reports_count')
+            ->with([
+                'user:id,name,email,trust_score,is_blocked',
+                'post:id,title,slug',
+            ])
             ->when($status, function ($q) use ($status) {
                 if ($status === 'reported') {
-                    $q->has('reports');
+                    $q->where('report_count', '>', 0);
                 } else {
                     $q->where('status', $status);
                 }
@@ -38,6 +52,12 @@ class CommentController extends Controller
             })
             ->latest()
             ->paginate(20);
+
+        if ($status === 'reported') {
+            $comments->getCollection()->load([
+                'reports:id,comment_id,reason',
+            ]);
+        }
 
         return response()->json($comments);
     }

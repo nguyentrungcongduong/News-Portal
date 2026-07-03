@@ -21,6 +21,7 @@ class PostResource extends JsonResource
             'thumbnail' => $this->thumbnail,
             'published_at' => $this->published_at,
             'views' => $this->views,
+            'bookmarked' => auth()->check() ? $this->bookmarkedBy(auth()->id()) : false,
             'author' => [
                 'name' => $this->author->name ?? 'Anonymous',
             ],

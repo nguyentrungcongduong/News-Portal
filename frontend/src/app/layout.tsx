@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { BookmarksProvider } from "@/contexts/BookmarksContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AdsProvider } from "@/contexts/AdsContext";
 
@@ -65,11 +66,13 @@ export default function RootLayout({
           <ThemeProvider>
             <AntdApp>
               <AuthProvider>
-                <AdsProvider>
-                  <RealtimeListener />
-                  <KeepAlive />
-                  {children}
-                </AdsProvider>
+                <BookmarksProvider>
+                  <AdsProvider>
+                    <RealtimeListener />
+                    <KeepAlive />
+                    {children}
+                  </AdsProvider>
+                </BookmarksProvider>
               </AuthProvider>
             </AntdApp>
           </ThemeProvider>
