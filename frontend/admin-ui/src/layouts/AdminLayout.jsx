@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu, theme, Button, notification } from 'antd';
-import { DashboardOutlined, FileTextOutlined, LogoutOutlined, FolderOutlined, CommentOutlined, DollarOutlined, NotificationOutlined, BellOutlined, SafetyCertificateOutlined, UserOutlined, UsergroupAddOutlined, SettingOutlined, BarChartOutlined, CheckCircleOutlined, HistoryOutlined, TagOutlined } from '@ant-design/icons';
+import { DashboardOutlined, FileTextOutlined, LogoutOutlined, FolderOutlined, CommentOutlined, DollarOutlined, NotificationOutlined, BellOutlined, SafetyCertificateOutlined, UserOutlined, UsergroupAddOutlined, SettingOutlined, CheckCircleOutlined, HistoryOutlined, TagOutlined, ProfileOutlined, MenuOutlined, AlertOutlined } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Badge, Dropdown, List, Typography, Avatar } from 'antd';
@@ -314,7 +314,7 @@ const AdminLayout = () => {
             !isEditor && {
               key: '/tags',
               icon: <TagOutlined />,
-              label: '🏷️ Quản lý Tags',
+              label: 'Quản lý Tags',
               onClick: () => navigate('/tags'),
             },
             // Editor KHÔNG được truy cập Moderation Dashboard và Audit Logs
@@ -345,20 +345,20 @@ const AdminLayout = () => {
             },
             !isEditor && {
               key: '/pages',
-              icon: <FileTextOutlined />,
-              label: '📄 Page Builder',
+              icon: <ProfileOutlined />,
+              label: 'Page Builder',
               onClick: () => navigate('/pages'),
             },
             !isEditor && {
               key: '/menus',
-              icon: <SettingOutlined />,
-              label: '🗺️ Quản lý Menu',
+              icon: <MenuOutlined />,
+              label: 'Quản lý Menu',
               onClick: () => navigate('/menus'),
             },
             !isEditor && {
               key: '/breaking-news',
-              icon: <NotificationOutlined />,
-              label: 'Breaking News 🔴',
+              icon: <AlertOutlined />,
+              label: 'Breaking News',
               onClick: () => navigate('/breaking-news'),
             },
             !isEditor && {
