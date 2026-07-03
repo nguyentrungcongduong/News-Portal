@@ -1,52 +1,48 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafafa;
-  /* Off-white zinc-50 style */
-  --foreground: #09090b;
-  --card: #ffffff;
-  --card-foreground: #09090b;
-  --popover: #ffffff;
-  --popover-foreground: #09090b;
-  --primary: #991b1b;
-  /* Deep Red for press accent */
+  --background: #f4efe6;
+  --foreground: #111827;
+  --card: #fffdf8;
+  --card-foreground: #111827;
+  --popover: #fffdf8;
+  --popover-foreground: #111827;
+  --primary: #b45309;
   --primary-foreground: #ffffff;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --accent: #f4f4f5;
-  --accent-foreground: #18181b;
+  --secondary: #ebe2d3;
+  --secondary-foreground: #1f2937;
+  --muted: #efe8db;
+  --muted-foreground: #6b7280;
+  --accent: #d97706;
+  --accent-foreground: #fffdf8;
   --destructive: #ef4444;
-  --destructive-foreground: #fafafa;
-  --border: #e4e4e7;
-  /* Subtle zinc-200 style */
-  --input: #e4e4e7;
-  --ring: #18181b;
-  --radius: 0px;
-  /* Sharp corners as requested */
+  --destructive-foreground: #fffdf8;
+  --border: #d8cbb7;
+  --input: #d8cbb7;
+  --ring: #111827;
+  --radius: 1.25rem;
 }
 
 .dark {
-  --background: #09090b;
-  --foreground: #fafafa;
-  --card: #09090b;
-  --card-foreground: #fafafa;
-  --popover: #09090b;
-  --popover-foreground: #fafafa;
-  --primary: #ef4444;
-  --primary-foreground: #09090b;
-  --secondary: #27272a;
-  --secondary-foreground: #fafafa;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --accent: #27272a;
-  --accent-foreground: #fafafa;
+  --background: #111827;
+  --foreground: #f9f4ea;
+  --card: #192332;
+  --card-foreground: #f9f4ea;
+  --popover: #192332;
+  --popover-foreground: #f9f4ea;
+  --primary: #f59e0b;
+  --primary-foreground: #111827;
+  --secondary: #223045;
+  --secondary-foreground: #f9f4ea;
+  --muted: #223045;
+  --muted-foreground: #b8c3d1;
+  --accent: #f59e0b;
+  --accent-foreground: #111827;
   --destructive: #7f1d1d;
-  --destructive-foreground: #fafafa;
-  --border: #27272a;
-  --input: #27272a;
-  --ring: #d4d4d8;
+  --destructive-foreground: #f9f4ea;
+  --border: #31435e;
+  --input: #31435e;
+  --ring: #f9f4ea;
 }
 
 @theme inline {
@@ -87,6 +83,9 @@ body {
   transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image:
+    radial-gradient(circle at top left, rgba(180, 83, 9, 0.09), transparent 24%),
+    radial-gradient(circle at top right, rgba(17, 24, 39, 0.06), transparent 22%);
 }
 
 h1,
@@ -97,7 +96,6 @@ h4,
   font-family: var(--font-serif);
 }
 
-/* Base Prose Styles */
 .prose {
   line-height: 1.8;
   color: var(--foreground);
@@ -119,7 +117,6 @@ h4,
   letter-spacing: -0.02em;
 }
 
-/* Custom Editorial Classes */
 .editorial-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -138,12 +135,32 @@ h4,
   position: absolute;
   top: -2px;
   left: 0;
-  width: 40px;
+  width: 64px;
   height: 5px;
   background-color: var(--primary);
 }
 
-/* Animations */
+::selection {
+  background-color: rgba(180, 83, 9, 0.2);
+  color: var(--foreground);
+}
+
+.news-shell {
+  position: relative;
+}
+
+.news-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(17, 24, 39, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 24, 39, 0.025) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(circle at center, black 40%, transparent 95%);
+  opacity: 0.5;
+}
+
 @keyframes marquee {
   0% {
     transform: translateX(0);
@@ -159,7 +176,6 @@ h4,
   animation: marquee 30s linear infinite;
 }
 
-/* Hover effects */
 .hover-editorial {
   position: relative;
   transition: all 0.3s ease;
@@ -189,7 +205,6 @@ h4,
   display: none;
 }
 
-/* Ant Design Dark Mode Safety Resets */
 .dark .ant-card {
   background-color: var(--background) !important;
   color: var(--foreground) !important;
@@ -202,7 +217,6 @@ h4,
 .dark .ant-picker,
 .dark .ant-input-number {
   background-color: #18181b !important;
-  /* zinc-900 override */
   color: var(--foreground) !important;
   border-color: var(--border) !important;
 }

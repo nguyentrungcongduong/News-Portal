@@ -48,7 +48,6 @@ export default function Navbar() {
     };
     fetchMenuData();
 
-    // Set high-end press date format
     const now = new Date();
     setCurrentDate(now.toLocaleDateString("vi-VN", {
       weekday: "long",
@@ -64,84 +63,78 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    console.log("menuItems updated:", menuItems);
-  }, [menuItems]);
-
   return (
-    <header className="w-full z-[100] bg-background border-b border-slate-200 dark:border-zinc-800">
-      {/* Top Bar - Press Style */}
+    <header className="w-full z-[100] border-b border-border/80 bg-background/95 backdrop-blur-sm">
       {!isSticky && (
-        <div className="hidden md:block border-b border-slate-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-950/50">
-          <div className="container mx-auto px-4 py-2 flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-            <div className="flex items-center gap-6">
+        <div className="hidden border-b border-border/60 bg-card/60 md:block">
+          <div className="container mx-auto flex items-center justify-between px-4 py-3 text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
+            <div className="flex min-w-0 items-center gap-6">
               <span>{currentDate}</span>
-              <div className="flex items-center gap-2">
-                <svg className="w-3 h-3 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" /></svg>
-                <span>Hà Nội, 24°C</span>
+              <div className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-primary">
+                <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                <span>Edition dang truc tuyen</span>
               </div>
             </div>
             <div className="flex items-center gap-6">
-              <Link href="/about" className="hover:underline">Về chúng tôi</Link>
-              <Link href="/contact" className="hover:underline">Liên hệ</Link>
-              <Link href="/advertise" className="hover:underline">Quảng cáo</Link>
+              <Link href="/about" className="transition-colors hover:text-foreground">Ve chung toi</Link>
+              <Link href="/support" className="transition-colors hover:text-foreground">Ho tro</Link>
+              <Link href="/advertising" className="transition-colors hover:text-foreground">Quang cao</Link>
             </div>
           </div>
         </div>
       )}
 
-      {/* Header Ad Spot - Premium Look */}
-      <div className="container mx-auto px-4 py-4 md:py-6 flex justify-center border-b border-slate-50 dark:border-zinc-900 bg-zinc-50/30 dark:bg-zinc-950/30">
+      <div className="container mx-auto flex justify-center border-b border-border/50 px-4 py-4 md:py-5">
         <AdBanner position="header" className="max-w-[728px] w-full" />
       </div>
 
-      {/* Main Bar */}
-      <div className={`transition-all duration-300 bg-background ${isSticky ? "fixed top-0 left-0 right-0 shadow-sm border-b py-3 bg-background/95 backdrop-blur-md" : "py-8"}`}>
+      <div className={`transition-all duration-300 ${isSticky ? "fixed left-0 right-0 top-0 border-b border-border/70 bg-background/92 py-3 shadow-[0_12px_40px_-24px_rgba(17,24,39,0.55)] backdrop-blur-xl" : "py-6 md:py-8"}`}>
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
-            {/* Mobile Toggle */}
+          <div className="flex items-center justify-between gap-4">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 text-foreground"
+              className="rounded-full border border-border/70 bg-card p-2.5 text-foreground lg:hidden"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
 
-            {/* Empty center on mobile for mobile logo if needed, otherwise logo is left/center */}
-            <Link
-              href="/"
-              className={`font-serif font-black tracking-tighter text-foreground border-b-4 border-primary transition-all duration-500 ${isSticky ? "text-2xl" : "text-4xl md:text-7xl"}`}
-            >
-              THE PRESS<span className="text-primary italic">.</span>
-            </Link>
+            <div className="flex min-w-0 flex-1 items-center gap-4 lg:flex-none">
+              <div className="hidden min-w-[12rem] lg:block">
+                <div className="text-[10px] font-black uppercase tracking-[0.34em] text-primary">News Portal</div>
+                <div className="mt-1 text-xs text-muted-foreground">Tin nhanh, sach, co ngu canh.</div>
+              </div>
+              <Link
+                href="/"
+                className={`min-w-0 font-serif font-black tracking-[-0.06em] text-foreground transition-all duration-500 ${isSticky ? "text-2xl md:text-3xl" : "text-4xl md:text-6xl"}`}
+              >
+                Daily Edition<span className="text-primary">.</span>
+              </Link>
+            </div>
 
-            {/* Actions */}
             <div className="flex items-center gap-2 md:gap-5">
-              <Link href="/search" className="hidden md:flex p-2 text-muted-foreground hover:text-primary transition-colors">
+              <Link href="/search" className="hidden rounded-full border border-border/70 bg-card p-2 text-muted-foreground transition-colors hover:text-primary md:flex">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               </Link>
               <ThemeToggle />
               <NotificationBell />
-              <div className="h-6 w-px bg-border mx-2 hidden md:block" />
+              <div className="mx-2 hidden h-6 w-px bg-border md:block" />
               <UserMenu />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Category Nav - Professional List */}
-      <nav className={`bg-background border-t border-border ${isSticky ? "hidden" : "block shadow-sm"}`}>
+      <nav className={`border-t border-border/60 bg-background/90 ${isSticky ? "hidden" : "block"}`}>
         <div className="container mx-auto px-4">
-          <ul className="flex items-center justify-start lg:justify-center gap-10 overflow-x-auto whitespace-nowrap scrollbar-hide py-4">
-            {/* Remove hardcoded TRANG CHỦ as it's now managed via menuItems */}
+          <ul className="scrollbar-hide flex items-center justify-start gap-4 overflow-x-auto whitespace-nowrap py-4 lg:justify-center">
             {menuItems.map((item: any) => (
               <li key={item.id} className="relative group">
                 <Link
                   href={item.url || "#"}
                   target={item.target}
-                  className={`text-[11px] font-black uppercase tracking-[0.2em] transition-colors py-4 flex items-center gap-1 ${pathname === item.url
-                    ? "text-primary border-b-2 border-primary pb-4 -mb-4.5"
-                    : "text-muted-foreground hover:text-foreground"
+                  className={`flex items-center gap-1 rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.2em] transition-colors ${pathname === item.url
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-card hover:text-foreground"
                     }`}
                 >
                   {item.title}
@@ -149,14 +142,13 @@ export default function Navbar() {
                     <svg className="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                   )}
                 </Link>
-                {/* Submenu (Optional enhancement) */}
                 {item.children?.length > 0 && (
-                  <ul className="absolute top-full left-0 bg-background border border-border shadow-xl py-3 min-w-[200px] hidden group-hover:block animate-in fade-in slide-in-from-top-2 duration-200 z-[110]">
+                  <ul className="absolute left-0 top-full z-[110] hidden min-w-[220px] rounded-[1.25rem] border border-border bg-card py-3 shadow-xl group-hover:block">
                     {item.children.map((child: any) => (
                       <li key={child.id}>
                         <Link
                           href={child.url || "#"}
-                          className="block px-6 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+                          className="block px-6 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors hover:bg-background/70"
                         >
                           {child.title}
                         </Link>
@@ -170,28 +162,30 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Drawer */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-[200] lg:hidden">
-          <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />
-          <aside className="absolute top-0 left-0 w-[300px] h-full bg-background p-10 flex flex-col gap-10 animate-in slide-in-from-left duration-300 border-r border-slate-200 dark:border-zinc-800">
+          <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />
+          <aside className="absolute left-0 top-0 flex h-full w-[320px] flex-col gap-10 border-r border-border bg-background p-8">
             <div className="flex items-center justify-between">
-              <span className="font-serif font-black text-3xl">MENU</span>
-              <button onClick={() => setIsMenuOpen(false)} className="p-2 border border-slate-200 dark:border-zinc-800">
+              <span className="font-serif text-3xl font-black">Daily Edition.</span>
+              <button onClick={() => setIsMenuOpen(false)} className="rounded-full border border-border p-2">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
-            <ul className="flex flex-col gap-6">
+            <div className="rounded-[1.5rem] border border-border bg-card/70 p-5 text-sm text-muted-foreground">
+              Ban doc cong khai danh cho doc gia. Chon chuyen muc hoac dung tim kiem de di thang vao bai viet.
+            </div>
+            <ul className="flex flex-col gap-4">
               {(mobileMenuItems.length > 0 ? mobileMenuItems : menuItems).map((item: any) => (
                 <li key={item.id}>
                   <Link
                     href={item.url || "#"}
-                    className={`text-lg font-black uppercase tracking-widest border-b border-slate-100 dark:border-zinc-900 pb-2 flex justify-between ${pathname === item.url ? "text-primary" : "text-slate-900 dark:text-zinc-50"
+                    className={`flex justify-between rounded-2xl border px-4 py-4 text-base font-black uppercase tracking-[0.2em] ${pathname === item.url ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-foreground"
                       }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.title}
-                    <svg className={`w-4 h-4 ${pathname === item.url ? "text-primary" : "text-slate-300"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
                   </Link>
                 </li>
               ))}

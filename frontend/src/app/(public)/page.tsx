@@ -22,16 +22,17 @@ export default async function HomePage() {
     console.error("Failed to load home data", error);
     return (
       <div className="container mx-auto px-4 py-24 text-center">
-        <h1 className="text-4xl font-serif font-black text-foreground mb-4">Edition Unavailable</h1>
-        <p className="text-muted-foreground font-editorial italic">Our servers are currently experiencing difficulties. Please stand by.</p>
-        <button className="mt-10 px-8 py-3 bg-slate-900 text-white font-black uppercase tracking-widest text-[10px]">Retry Acquisition</button>
+        <h1 className="mb-4 text-4xl font-serif font-black text-foreground">Edition Unavailable</h1>
+        <p className="font-editorial italic text-muted-foreground">Our servers are currently experiencing difficulties. Please stand by.</p>
+        <button className="mt-10 bg-slate-900 px-8 py-3 text-[10px] font-black uppercase tracking-widest text-white">Retry Acquisition</button>
       </div>
     );
   }
 
   const { top_headline, featured_posts, category_blocks } = homeData;
+  const spotlightPosts = featured_posts?.slice(0, 3) || [];
+  const leadCategories = category_blocks?.slice(0, 3) || [];
 
-  // Optimized NewsArticle JSON-LD
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "NewsMediaOrganization",
@@ -46,138 +47,155 @@ export default async function HomePage() {
   };
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="news-shell min-h-screen bg-background">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main className="container mx-auto px-4 py-12">
-        {/* --- HERO BREAKING NEWS GRID --- */}
-        <section className="mb-20">
-          <div className="flex items-center gap-4 mb-8">
-            <span className="flex items-center gap-2 px-3 py-1 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em]">
-              <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-              Breaking
-            </span>
-            <div className="h-px flex-1 bg-slate-200 dark:bg-zinc-800" />
+      <main className="container mx-auto px-4 py-8 md:py-12">
+        <section className="mb-10 grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
+          <div className="rounded-[2rem] border border-border/80 bg-card px-6 py-6 shadow-[0_30px_90px_-50px_rgba(17,24,39,0.45)] md:px-8">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rounded-full bg-primary px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.34em] text-white">
+                Front Page
+              </span>
+              <span className="rounded-full border border-border px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.28em] text-muted-foreground">
+                Cap nhat theo thoi gian thuc
+              </span>
+            </div>
+            <div className="mt-6 max-w-4xl">
+              <h1 className="font-serif text-4xl font-black leading-[0.95] tracking-[-0.05em] text-foreground md:text-6xl">
+                Giao dien doc tin tap trung hon, sach hon va uu tien nhip doc tren moi man hinh.
+              </h1>
+              <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground font-editorial md:text-lg">
+                Trang chu gom tin nong, diem nhan bien tap va cac tuyen noi dung chinh vao mot flow ngan, ro, it nhieu thi giac hon ban cu.
+              </p>
+            </div>
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+              <div className="rounded-[1.5rem] border border-border bg-background/70 p-5">
+                <div className="text-[10px] font-black uppercase tracking-[0.28em] text-primary">Tin nong</div>
+                <div className="mt-3 text-2xl font-serif font-black">{trendingData?.data?.length || 0}</div>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">Bai dang duoc doc nhieu nhat trong ngay.</p>
+              </div>
+              <div className="rounded-[1.5rem] border border-border bg-background/70 p-5">
+                <div className="text-[10px] font-black uppercase tracking-[0.28em] text-primary">Chuyen muc</div>
+                <div className="mt-3 text-2xl font-serif font-black">{category_blocks?.length || 0}</div>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">Khoi noi dung duoc uu tien tren trang chu.</p>
+              </div>
+              <div className="rounded-[1.5rem] border border-border bg-background/70 p-5">
+                <div className="text-[10px] font-black uppercase tracking-[0.28em] text-primary">Nhip xuat ban</div>
+                <div className="mt-3 text-2xl font-serif font-black">24/7</div>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">Toi uu de quet nhanh roi doc sau ngay sau do.</p>
+              </div>
+            </div>
           </div>
+          <aside className="rounded-[2rem] border border-border/80 bg-slate-900 p-6 text-white shadow-[0_35px_100px_-55px_rgba(17,24,39,0.85)]">
+            <div className="flex items-center justify-between">
+              <h2 className="text-[11px] font-black uppercase tracking-[0.34em] text-amber-300">Morning Brief</h2>
+              <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.24em] text-white/70">Live</span>
+            </div>
+            <div className="mt-6 space-y-5">
+              {trendingData?.data?.slice(0, 4).map((post: any, index: number) => (
+                <Link key={post.id} href={`/post/${post.slug}`} className="block rounded-[1.4rem] border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10">
+                  <div className="flex items-start gap-4">
+                    <span className="font-serif text-3xl font-black text-amber-300/80">{String(index + 1).padStart(2, "0")}</span>
+                    <div>
+                      <div className="text-[10px] font-black uppercase tracking-[0.28em] text-white/60">
+                        {post.category_name || "Tin moi"}
+                      </div>
+                      <h3 className="mt-2 text-lg font-serif font-black leading-tight text-white">
+                        {post.title}
+                      </h3>
+                      <div className="mt-3 text-[10px] uppercase tracking-[0.25em] text-white/50">
+                        {post.views?.toLocaleString()} luot doc
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </aside>
+        </section>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            {/* 65% Main Feature Column */}
-            <div className="lg:col-span-8">
-              {top_headline ? (
-                <EditorialPostCard post={top_headline} variant="hero" />
-              ) : (
-                <div className="h-[400px] border border-dashed border-slate-200 flex items-center justify-center">
-                  <EmptyState title="No Headline Story" description="Stand by for the latest edition." icon="inbox" />
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
-                {featured_posts?.slice(0, 2).map((post: any) => (
-                  <EditorialPostCard key={post.id} post={post} variant="secondary" />
+        <section className="mb-16 grid gap-10 lg:grid-cols-[1.25fr_0.75fr]">
+          <div>
+            {top_headline ? (
+              <EditorialPostCard post={top_headline} variant="hero" />
+            ) : (
+              <div className="flex h-[400px] items-center justify-center rounded-[2rem] border border-dashed border-border">
+                <EmptyState title="No Headline Story" description="Stand by for the latest edition." icon="inbox" />
+              </div>
+            )}
+          </div>
+          <div className="space-y-5">
+            <div className="rounded-[2rem] border border-border/80 bg-card p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-[11px] font-black uppercase tracking-[0.34em] text-primary">Diem nhanh</h2>
+                <Link href="/search" className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground transition-colors hover:text-primary">
+                  Tim bai viet
+                </Link>
+              </div>
+              <div className="mt-5 space-y-3">
+                {spotlightPosts.map((post: any) => (
+                  <EditorialPostCard key={post.id} post={post} variant="list" showExcerpt={false} />
                 ))}
               </div>
             </div>
-
-            {/* 35% Sidebar Column */}
-            <aside className="lg:col-span-4 border-l border-slate-200 dark:border-zinc-800 pl-0 lg:pl-10 h-fit">
-              <div className="space-y-12">
-                {/* Trending Stories (Numbers Style) */}
-                <div>
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.3em] mb-8 flex items-center gap-3">
-                    Most Read
-                    <div className="h-px flex-1 bg-slate-100 dark:bg-zinc-900" />
-                  </h3>
-                  <div className="space-y-10">
-                    {trendingData?.data?.slice(0, 5).map((post: any, index: number) => (
-                      <Link key={post.id} href={`/post/${post.slug}`} className="flex gap-6 group">
-                        <span className="text-4xl md:text-5xl font-serif font-black text-slate-100 dark:text-zinc-900 group-hover:text-primary transition-colors leading-none">
-                          {index + 1}
-                        </span>
-                        <div className="flex-1 space-y-1 pt-1">
-                          <span className="text-[8px] font-black uppercase text-primary tracking-widest">{post.category_name || "Updates"}</span>
-                          <h4 className="text-base font-serif font-black leading-tight group-hover:underline decoration-1 underline-offset-2">
-                            {post.title}
-                          </h4>
-                          <span className="text-[8px] text-slate-400 uppercase tracking-widest block pt-1">{post.views?.toLocaleString()} readers</span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Sidebar Ad Spot */}
-                <div className="py-6 border-y border-slate-50 dark:border-zinc-950">
-                  <AdBanner position="sidebar" />
-                </div>
-
-                {/* Newsletter Box - Sharp & Clean */}
-                <div className="border border-slate-900 dark:border-zinc-50 p-8 pt-10 relative">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-4">
-                    <svg className="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" /></svg>
-                  </div>
-                  <h4 className="text-xl font-serif font-black mb-3 text-center">The Morning Dispatch</h4>
-                  <p className="text-xs text-slate-500 font-editorial italic text-center leading-relaxed mb-8">
-                    Essential reports delivered to your inbox every working morning. No filler, just truth.
-                  </p>
-                  <div className="space-y-4">
-                    <input
-                      type="email"
-                      placeholder="ENTER EMAIL ADDRESS"
-                      className="w-full bg-slate-50 dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 p-3 text-xs outline-none focus:border-primary transition-colors font-black uppercase tracking-widest"
-                    />
-                    <button className="w-full bg-slate-900 dark:bg-zinc-50 text-white dark:text-slate-900 py-4 text-[10px] font-black uppercase tracking-[0.4em] hover:bg-primary transition-colors">Subscribe Now</button>
-                  </div>
-                </div>
+            <div className="rounded-[2rem] border border-border/80 bg-card p-6">
+              <h2 className="text-[11px] font-black uppercase tracking-[0.34em] text-primary">Quang cao</h2>
+              <div className="mt-5">
+                <AdBanner position="sidebar" />
               </div>
-            </aside>
+            </div>
+            <div className="rounded-[2rem] border border-border/80 bg-card p-6">
+              <h2 className="text-[11px] font-black uppercase tracking-[0.34em] text-primary">Cac tuyen chinh</h2>
+              <div className="mt-5 grid gap-3">
+                {leadCategories.map((block: any) => (
+                  <Link
+                    key={block.category.id}
+                    href={`/category/${block.category.slug}`}
+                    className="rounded-[1.25rem] border border-border bg-background/70 px-4 py-4 transition-colors hover:border-primary/40"
+                  >
+                    <div className="text-lg font-serif font-black">{block.category.name}</div>
+                    <div className="mt-1 text-sm text-muted-foreground">{block.posts?.length || 0} bai noi bat trong muc nay</div>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* --- CATEGORY SECTIONS: Editorial Flow --- */}
         {category_blocks?.map((block: any, idx: number) => (
-          <section key={block.category.id} className="mb-24 pt-20 border-t border-slate-200 dark:border-zinc-800">
-            <div className="flex items-end justify-between mb-12">
-              <div className="space-y-2">
-                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary">Department</span>
-                <h2 className="text-5xl md:text-6xl font-serif font-black tracking-tighter uppercase">{block.category.name}</h2>
+          <section key={block.category.id} className="mb-20 rounded-[2rem] border border-border/80 bg-card p-6 md:p-8">
+            <div className="mb-8 flex flex-col gap-4 border-b border-border/70 pb-8 md:flex-row md:items-end md:justify-between">
+              <div className="space-y-3">
+                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary">
+                  {idx === 0 ? "Featured Desk" : "News Desk"}
+                </span>
+                <h2 className="text-4xl font-serif font-black tracking-[-0.04em] md:text-5xl">{block.category.name}</h2>
+                <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+                  Tuyen bai duoc lam lai theo dang lead story cong danh sach bo tro, giup nguoi doc vao dung trong tam roi moi doc them.
+                </p>
               </div>
-              <Link href={`/category/${block.category.slug}`} className="text-[10px] font-black uppercase tracking-widest hover:text-primary transition-colors border-b border-slate-200 pb-1">
-                View Archive →
+              <Link href={`/category/${block.category.slug}`} className="w-fit rounded-full border border-border px-5 py-3 text-[11px] font-black uppercase tracking-[0.24em] transition-colors hover:border-primary hover:text-primary">
+                Xem chuyen muc
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
-              {/* Large Item in Category (6 Cols) */}
-              <div className="lg:col-span-6 border-r border-slate-100 dark:border-zinc-900 pr-0 lg:pr-10">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+              <div>
                 {block.posts?.[0] && <EditorialPostCard post={block.posts[0]} variant="secondary" showExcerpt={true} />}
               </div>
-
-              {/* Small Items List (6 Cols) */}
-              <div className="lg:col-span-6 space-y-2">
-                {block.posts?.slice(1, 5).map((p: any) => (
-                  <EditorialPostCard key={p.id} post={p} variant="list" />
+              <div className="grid gap-4">
+                {block.posts?.slice(1, 5).map((p: any, listIndex: number) => (
+                  <EditorialPostCard key={p.id} post={p} variant={listIndex === 0 ? "trending" : "list"} />
                 ))}
               </div>
             </div>
           </section>
         ))}
       </main>
-
-      {/* FOOTER MASTHEAD (Branding) */}
-      <footer className="border-t-[12px] border-slate-900 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-20">
-        <div className="container mx-auto px-4 text-center space-y-10">
-          <span className="font-serif font-black text-6xl md:text-9xl tracking-tighter text-slate-900/5 dark:text-zinc-50/5 block pointer-events-none">THE PRESS.</span>
-          <div className="max-w-xl mx-auto space-y-6">
-            <h5 className="text-xs font-black uppercase tracking-[0.3em] text-foreground">Independent Journalism</h5>
-            <p className="text-sm text-muted-foreground font-editorial italic leading-relaxed">
-              Founded on the belief that context is as important as content. We provide the background you need to understand the world.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
