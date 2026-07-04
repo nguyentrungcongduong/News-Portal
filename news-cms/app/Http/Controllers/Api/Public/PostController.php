@@ -200,6 +200,19 @@ class PostController extends Controller
         return PostResource::collection($posts);
     }
 
+    public function likes()
+    {
+        $posts = Post::published()
+            ->select('posts.*')
+            ->join('post_likes', 'post_likes.post_id', '=', 'posts.id')
+            ->where('post_likes.user_id', auth()->id())
+            ->with(['categories', 'author'])
+            ->orderByDesc('post_likes.created_at')
+            ->paginate(12);
+
+        return PostResource::collection($posts);
+    }
+
     protected function forgetPostDetailCache($postId): void
     {
         $post = Post::find($postId);

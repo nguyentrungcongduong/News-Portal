@@ -2,7 +2,7 @@ import { getHomeData, getTrendingPosts } from "@/lib/api";
 import EditorialPostCard from "@/components/EditorialPostCard";
 import EmptyState from "@/components/EmptyState";
 import Link from "next/link";
-import AdBanner from "@/components/AdBanner";
+import HomeSidebarAdPanel from "@/components/HomeSidebarAdPanel";
 
 export const metadata = {
   title: "The Press | Reliable Journalism & In-depth Reports",
@@ -118,7 +118,7 @@ export default async function HomePage() {
           </aside>
         </section>
 
-        <section className="mb-16 grid gap-10 lg:grid-cols-[1.25fr_0.75fr]">
+        <section className="mb-16 space-y-8">
           <div>
             {top_headline ? (
               <EditorialPostCard post={top_headline} variant="hero" />
@@ -128,7 +128,8 @@ export default async function HomePage() {
               </div>
             )}
           </div>
-          <div className="space-y-5">
+
+          <div className="grid gap-6 lg:grid-cols-[1fr_0.78fr] lg:items-start">
             <div className="rounded-[2rem] border border-border/80 bg-card p-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-[11px] font-black uppercase tracking-[0.34em] text-primary">Diem nhanh</h2>
@@ -142,25 +143,23 @@ export default async function HomePage() {
                 ))}
               </div>
             </div>
-            <div className="rounded-[2rem] border border-border/80 bg-card p-6">
-              <h2 className="text-[11px] font-black uppercase tracking-[0.34em] text-primary">Quang cao</h2>
-              <div className="mt-5">
-                <AdBanner position="sidebar" />
-              </div>
-            </div>
-            <div className="rounded-[2rem] border border-border/80 bg-card p-6">
-              <h2 className="text-[11px] font-black uppercase tracking-[0.34em] text-primary">Cac tuyen chinh</h2>
-              <div className="mt-5 grid gap-3">
-                {leadCategories.map((block: any) => (
-                  <Link
-                    key={block.category.id}
-                    href={`/category/${block.category.slug}`}
-                    className="rounded-[1.25rem] border border-border bg-background/70 px-4 py-4 transition-colors hover:border-primary/40"
-                  >
-                    <div className="text-lg font-serif font-black">{block.category.name}</div>
-                    <div className="mt-1 text-sm text-muted-foreground">{block.posts?.length || 0} bai noi bat trong muc nay</div>
-                  </Link>
-                ))}
+
+            <div className="space-y-5">
+              <HomeSidebarAdPanel />
+              <div className="rounded-[2rem] border border-border/80 bg-card p-6">
+                <h2 className="text-[11px] font-black uppercase tracking-[0.34em] text-primary">Cac tuyen chinh</h2>
+                <div className="mt-5 grid gap-3">
+                  {leadCategories.map((block: any) => (
+                    <Link
+                      key={block.category.id}
+                      href={`/category/${block.category.slug}`}
+                      className="rounded-[1.25rem] border border-border bg-background/70 px-4 py-4 transition-colors hover:border-primary/40"
+                    >
+                      <div className="text-lg font-serif font-black">{block.category.name}</div>
+                      <div className="mt-1 text-sm text-muted-foreground">{block.posts?.length || 0} bai noi bat trong muc nay</div>
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

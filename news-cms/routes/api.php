@@ -72,6 +72,7 @@ Route::prefix('public')->group(function () {
     Route::post('/posts/{id}/like', [\App\Http\Controllers\Api\Public\PostController::class, 'like'])->middleware(['auth:sanctum', 'blocked']);
     Route::post('/posts/{id}/bookmark', [\App\Http\Controllers\Api\Public\PostController::class, 'bookmark'])->middleware(['auth:sanctum', 'blocked']);
     Route::get('/me/bookmarks', [\App\Http\Controllers\Api\Public\PostController::class, 'bookmarks'])->middleware(['auth:sanctum', 'blocked']);
+    Route::get('/me/likes', [\App\Http\Controllers\Api\Public\PostController::class, 'likes'])->middleware(['auth:sanctum', 'blocked']);
     Route::get('/me/bookmarks/ids', [\App\Http\Controllers\Api\Public\PostController::class, 'bookmarkIds'])->middleware(['auth:sanctum', 'blocked']);
 
     // Comments
